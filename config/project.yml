@@ -1,0 +1,44 @@
+project:
+  start_year: 1990
+  end_year: 2023
+  sexes: [Female, Male]
+  ages:
+    adult: { min: 40, max: 89 }
+    hump: { min: 15, max: 44 }
+    fit: { min: 15, max: 89 }
+  hump:
+    enabled: true
+    mu: 28
+    sigma: 10
+
+cases:
+  - id: YEM_2015
+    iso3: YEM
+    t0: 2015
+    t1: 2023
+    controls: [OMN, JOR, MAR]
+  - id: SYR_2011
+    iso3: SYR
+    t0: 2011
+    t1: 2023
+    controls: [JOR, TUN, MAR]
+  - id: UKR_2022
+    iso3: UKR
+    t0: 2022
+    t1: 2023
+    controls: [POL, ROU, BGR]
+
+wdi:
+  indicators:
+    population: SP.POP.TOTL
+    pou: SN.ITK.DEFC.ZS
+    fies: SN.ITK.MSFI.ZS
+  interpolate: true
+
+paths:
+  data_raw: data/raw
+  data_intermediate: data/intermediate
+  data_processed: data/processed
+  reports_figures: reports/figures
+  reports_tables: reports/tables
+

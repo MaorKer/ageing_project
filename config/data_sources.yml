@@ -1,0 +1,30 @@
+ucdp:
+  raw_dir: data/raw/ucdp
+  # Put the downloaded UCDP BRD CSV/XLSX in this folder.
+  #
+  # Download: https://ucdp.uu.se/downloads/ (Battle-Related Deaths dataset)
+  #
+  # The standardizer will try to auto-detect:
+  # - year column: year / Year
+  # - country column: location / country / Location
+  # - deaths column: bd_best / best / battle_deaths / deaths
+  #
+  # If auto-detection fails, pass explicit flags to scripts/20_prepare_ucdp.py.
+  expected_year_col_candidates: [year, Year]
+  expected_country_col_candidates: [location, Location, country, Country]
+  expected_deaths_col_candidates: [bd_best, best, battle_deaths, deaths, deaths_best]
+
+wpp:
+  output_parquet: data/raw/wpp_mx.parquet
+  # WPP portal: https://population.un.org/wpp/
+  # R package: https://github.com/PPgp/wpp2024
+  # Expected columns after export:
+  # iso3, year, sex, age, mx
+
+wdi:
+  api_base: https://api.worldbank.org/v2
+  # API docs: https://datahelpdesk.worldbank.org/knowledgebase/articles/889392-about-the-indicators-api-documentation
+  # Indicators used:
+  # - SP.POP.TOTL (population)
+  # - SN.ITK.DEFC.ZS (PoU)
+  # - SN.ITK.MSFI.ZS (FIES)

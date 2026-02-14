@@ -1,0 +1,2 @@
+[console_scripts]
+wha = war_hunger_aging.cli:app

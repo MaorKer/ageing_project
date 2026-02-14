@@ -1,0 +1,29 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.cache/
+.DS_Store
+
+# Data (do not commit)
+data/raw/**
+data/intermediate/**
+data/processed/**
+
+# Reports output
+reports/figures/**
+reports/tables/**
+
+# Allow placeholders
+!data/raw/.gitkeep
+!data/raw/**/.gitkeep
+!data/intermediate/.gitkeep
+!data/intermediate/**/.gitkeep
+!data/processed/.gitkeep
+!data/processed/**/.gitkeep
+!reports/figures/.gitkeep
+!reports/figures/**/.gitkeep
+!reports/tables/.gitkeep
+!reports/tables/**/.gitkeep
