@@ -16,11 +16,11 @@ def main() -> None:
     methods = methods_path.read_text() if methods_path.exists() else "# Methods\n\n"
     results = results_path.read_text() if results_path.exists() else "# Results\n\n"
 
-    figs = sorted(cfg.paths.reports_figures.glob("*.png"))
+    figs = sorted(cfg.paths.reports_figures.rglob("*.png"))
     tabs = [p for p in sorted(cfg.paths.reports_tables.glob("*.*")) if p.name != ".gitkeep"]
 
     lines: list[str] = []
-    lines.append("# War & hunger vs aging curves — Report\n")
+    lines.append("# War, hunger, and aging curves — Report\n")
     lines.append(methods.strip() + "\n")
     lines.append(results.strip() + "\n")
     lines.append("## Figures\n")

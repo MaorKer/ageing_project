@@ -14,8 +14,10 @@ src/war_hunger_aging/analysis/__init__.py
 src/war_hunger_aging/analysis/event_study.py
 src/war_hunger_aging/analysis/regressions.py
 src/war_hunger_aging/io/__init__.py
+src/war_hunger_aging/io/srs_life_tables.py
 src/war_hunger_aging/io/ucdp.py
 src/war_hunger_aging/io/wdi.py
+src/war_hunger_aging/io/who_gho.py
 src/war_hunger_aging/io/wpp.py
 src/war_hunger_aging/model/__init__.py
 src/war_hunger_aging/model/gm.py

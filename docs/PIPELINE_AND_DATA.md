@@ -77,7 +77,7 @@ Extracted columns (long-form):
 - Derived: `age_mid`, `mx`
 
 Derived hazard proxy:
-- For closed intervals: `mx ≈ -ln(1 - nqx) / n` (where `n` is interval width).
+- For closed intervals: $mx \\approx -\\ln(1 - nqx) / n$ (where `n` is interval width).
 - For open interval `85+`: the PDF shows `nqx` as `...`, so `mx` is left missing.
 
 ### 5) Extra WDI series (life expectancy + mortality; optional)
@@ -87,7 +87,7 @@ This is an optional add-on to fetch more health/demography series from WDI:
 
 By default it attempts:
 - Life expectancy at birth: `SP.DYN.LE00.IN`, `SP.DYN.LE00.MA.IN`, `SP.DYN.LE00.FE.IN`
-- Child mortality: `SP.DYN.IMRT.IN`, `SP.DYN.U5MR.IN`
+- Child mortality: `SP.DYN.IMRT.IN`, `SH.DYN.MORT`
 - Adult mortality (coverage varies): `SP.DYN.AMRT.MA`, `SP.DYN.AMRT.FE`
 
 ### 6) WHO GHO API (optional)
@@ -147,6 +147,13 @@ To make GMH fitting usable on abridged tables, `fit_gompertz_makeham_hump` now a
 - Updated function signature: `src/war_hunger_aging/model/gmh.py`
 - The SRS fitting script defaults to `--min-points 12` instead of requiring 20 points.
 
+### PDF report (Docker)
+If you want a single PDF that includes the main war/hunger outputs plus the India SRS add-on (when present), run:
+```bash
+bash scripts/90_make_pdf_report.sh
+```
+This will (inside Docker) rebuild `reports/report_full.md` and then write `reports/report_full.pdf`.
+
 ## API usage (are we “using the APIs”?)
 
 Yes, for the war/hunger pipeline:
@@ -172,3 +179,9 @@ Not an API:
   - consistent region identifiers, and
   - a modeling choice (state fixed effects, synthetic control, etc.).
 
+### Other relevant data/APIs (not wired yet)
+If you want richer outcomes/covariates beyond WPP/WDI/UCDP BRD:
+- **Human Mortality Database (HMD)**: full life tables where available (requires login/API access).
+- **IHME GBD**: subnational life expectancy/mortality (typically via downloads; access terms apply).
+- **ACLED**: subnational conflict events (API key required).
+- **UCDP GED**: subnational/geocoded conflict events (download; can pair with SRS state/UT tables).

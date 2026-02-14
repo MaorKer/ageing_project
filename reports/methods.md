@@ -22,6 +22,22 @@ Population for normalization is `SP.POP.TOTL`.
 
 Implementation: `scripts/10_fetch_wdi.py`.
 
+## India SRS (optional add-on)
+Separately from the cross-country war/hunger panel, we can apply the same “aging curve decomposition” idea to India’s **SRS Abridged Life Tables (2018–22)** at the state/UT level and by residence:
+- Input: `SRS-Abridged_Life_Tables_2018-2022.pdf` (repo root)
+- Extraction: `scripts/05_extract_srs_life_tables.py` → `data/intermediate/srs_abridged_life_tables_2018_22.csv`
+- The abridged tables provide `nqx` over age intervals (e.g., `20–25`). We derive a hazard proxy for closed intervals:
+  - $mx \\approx -\\ln(1 - nqx) / n$ (where `n` is the interval width)
+  - The open-ended `85+` interval has `nqx` shown as `...` in the PDF, so `mx` is left missing.
+
+We then fit the same GM/GMH models per `area × residence × sex` and compute **Urban − Rural** deltas:
+- Fit + deltas: `scripts/55_fit_srs_models.py` → `data/processed/srs_params.parquet`, `data/processed/srs_urban_rural_deltas.parquet`, `reports/figures/srs/`, `reports/tables/srs_*.csv`
+
+## Extra APIs (optional)
+If your environment has internet access, there are optional fetchers for additional national series:
+- World Bank WDI (life expectancy + mortality): `scripts/11_fetch_wdi_extra.py`
+- WHO GHO (OData): `scripts/12_fetch_who_gho.py`
+
 ## Mortality models
 ### Gompertz–Makeham (adult fit)
 On adult ages 40–89 we fit:

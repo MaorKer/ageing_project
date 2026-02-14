@@ -14,7 +14,7 @@ DEFAULT_INDICATORS = [
     "SP.DYN.LE00.FE.IN",
     # Child mortality
     "SP.DYN.IMRT.IN",  # infant mortality rate (per 1,000 live births)
-    "SP.DYN.U5MR.IN",  # under-5 mortality rate (per 1,000 live births)
+    "SH.DYN.MORT",  # under-5 mortality rate (per 1,000 live births)
     # Adult mortality (per 1,000 adults) – indicator codes exist in WDI but coverage varies.
     "SP.DYN.AMRT.MA",
     "SP.DYN.AMRT.FE",
@@ -48,4 +48,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

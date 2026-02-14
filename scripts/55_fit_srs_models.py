@@ -176,7 +176,6 @@ def main() -> None:
             aggfunc="first",
         )
         .reset_index()
-        .rename_axis(None, axis=1)
     )
 
     def col(metric: str, residence: str) -> str:
@@ -320,4 +319,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

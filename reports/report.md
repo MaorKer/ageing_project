@@ -1,4 +1,4 @@
-# War & hunger vs aging curves — Report
+# War, hunger, and aging curves — Report
 
 # Methods
 
@@ -24,10 +24,26 @@ Population for normalization is `SP.POP.TOTL`.
 
 Implementation: `scripts/10_fetch_wdi.py`.
 
+## India SRS (optional add-on)
+Separately from the cross-country war/hunger panel, we can apply the same “aging curve decomposition” idea to India’s **SRS Abridged Life Tables (2018–22)** at the state/UT level and by residence:
+- Input: `SRS-Abridged_Life_Tables_2018-2022.pdf` (repo root)
+- Extraction: `scripts/05_extract_srs_life_tables.py` → `data/intermediate/srs_abridged_life_tables_2018_22.csv`
+- The abridged tables provide `nqx` over age intervals (e.g., `20–25`). We derive a hazard proxy for closed intervals:
+  - $mx \\approx -\\ln(1 - nqx) / n$ (where `n` is the interval width)
+  - The open-ended `85+` interval has `nqx` shown as `...` in the PDF, so `mx` is left missing.
+
+We then fit the same GM/GMH models per `area × residence × sex` and compute **Urban − Rural** deltas:
+- Fit + deltas: `scripts/55_fit_srs_models.py` → `data/processed/srs_params.parquet`, `data/processed/srs_urban_rural_deltas.parquet`, `reports/figures/srs/`, `reports/tables/srs_*.csv`
+
+## Extra APIs (optional)
+If your environment has internet access, there are optional fetchers for additional national series:
+- World Bank WDI (life expectancy + mortality): `scripts/11_fetch_wdi_extra.py`
+- WHO GHO (OData): `scripts/12_fetch_who_gho.py`
+
 ## Mortality models
 ### Gompertz–Makeham (adult fit)
 On adult ages 40–89 we fit:
-\u03bc(x)=c + a e^{b x}
+$\mu(x)=c + a e^{b x}$
 where:
 - `b` is the aging slope (MRDT = ln(2)/b),
 - `a` shifts the Gompertz component,
@@ -35,12 +51,12 @@ where:
 
 ### Young-adult hump extension (war signature)
 To capture disproportionate young-adult violent mortality, we extend:
-\u03bc(x)=c + a e^{b x} + h exp(-(x-\u03bc_h)^2/(2\sigma_h^2))
-with fixed hump center/width (\u03bc_h=28, \u03c3_h=10) and estimated amplitude `h \u2265 0`.
+$\mu(x)=c + a e^{b x} + h \exp\left(-\frac{(x-\mu_h)^2}{2\sigma_h^2}\right)$
+with fixed hump center/width ($\mu_h=28$, $\sigma_h=10$) and estimated amplitude $h \ge 0$.
 
 ### Estimation
 We fit parameters by non-linear least squares minimizing the log-scale residual:
-log(mx) - log(\u03bc(x;\u03b8))
+$\log(mx) - \log(\mu(x;\theta))$
 with positivity enforced by log-parameterization.
 
 ## Event windows
@@ -56,6 +72,26 @@ Controls are selected a priori in `config/project.yml`.
 This file is intentionally lightweight. Run the pipeline to populate:
 - `reports/figures/` for event-study figures
 - `reports/tables/` for regression outputs and summaries
+
+## India SRS (optional add-on)
+If you have `SRS-Abridged_Life_Tables_2018-2022.pdf` in the repo root, you can extract and fit models for India + states/UTs:
+```bash
+python3 scripts/05_extract_srs_life_tables.py
+python3 scripts/55_fit_srs_models.py
+```
+
+Key outputs:
+- `data/intermediate/srs_abridged_life_tables_2018_22.csv`
+- `data/processed/srs_params.parquet`
+- `data/processed/srs_urban_rural_deltas.parquet`
+- `reports/figures/srs/` (Urban − Rural delta plots; optional hazard overlays)
+
+## Extra APIs (optional)
+If your environment has internet access, you can fetch additional series:
+```bash
+python3 scripts/11_fetch_wdi_extra.py
+python3 scripts/12_fetch_who_gho.py
+```
 
 ## Figures
 
@@ -89,9 +125,28 @@ This file is intentionally lightweight. Run the pipeline to populate:
 - reports/figures/YEM_2015_YEM_Male_timeseries_b.png
 - reports/figures/YEM_2015_YEM_Male_timeseries_c.png
 - reports/figures/YEM_2015_YEM_Male_timeseries_h.png
+- reports/figures/srs/delta_b_urban_minus_rural_gm_Female.png
+- reports/figures/srs/delta_b_urban_minus_rural_gm_Male.png
+- reports/figures/srs/delta_b_urban_minus_rural_gm_Total.png
+- reports/figures/srs/delta_b_urban_minus_rural_gmh_Female.png
+- reports/figures/srs/delta_b_urban_minus_rural_gmh_Male.png
+- reports/figures/srs/delta_b_urban_minus_rural_gmh_Total.png
+- reports/figures/srs/delta_c_urban_minus_rural_gm_Female.png
+- reports/figures/srs/delta_c_urban_minus_rural_gm_Male.png
+- reports/figures/srs/delta_c_urban_minus_rural_gm_Total.png
+- reports/figures/srs/delta_c_urban_minus_rural_gmh_Female.png
+- reports/figures/srs/delta_c_urban_minus_rural_gmh_Male.png
+- reports/figures/srs/delta_c_urban_minus_rural_gmh_Total.png
+- reports/figures/srs/delta_cb_urban_minus_rural_gm_Female.png
+- reports/figures/srs/delta_cb_urban_minus_rural_gm_Male.png
+- reports/figures/srs/delta_cb_urban_minus_rural_gm_Total.png
+- reports/figures/srs/delta_cb_urban_minus_rural_gmh_Female.png
+- reports/figures/srs/delta_cb_urban_minus_rural_gmh_Male.png
+- reports/figures/srs/delta_cb_urban_minus_rural_gmh_Total.png
 
 ## Tables
 
+- reports/tables/event_summary.csv
 - reports/tables/regression_b_Female.txt
 - reports/tables/regression_b_Female_coef.csv
 - reports/tables/regression_b_Male.txt
@@ -104,3 +159,5 @@ This file is intentionally lightweight. Run the pipeline to populate:
 - reports/tables/regression_h_Female_coef.csv
 - reports/tables/regression_h_Male.txt
 - reports/tables/regression_h_Male_coef.csv
+- reports/tables/srs_params.csv
+- reports/tables/srs_urban_rural_deltas.csv

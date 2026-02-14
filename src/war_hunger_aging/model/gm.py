@@ -23,7 +23,9 @@ class GMFit:
 
 
 def gm_hazard(age: np.ndarray, *, a: float, b: float, c: float) -> np.ndarray:
-    return c + a * np.exp(b * age)
+    # Clip exponent to avoid overflow in extreme optimizer proposals.
+    z = np.clip(b * age, -700.0, 700.0)
+    return c + a * np.exp(z)
 
 
 def _initial_guess(age: np.ndarray, mx: np.ndarray) -> tuple[float, float, float]:
@@ -74,4 +76,3 @@ def fit_gompertz_makeham(
     r = residuals(res.x)
     rmse = float(np.sqrt(np.mean(r**2))) if r.size else float("nan")
     return GMFit(a=a, b=b, c=c, converged=bool(res.success), rmse_log=rmse, n=int(len(sub)), message=str(res.message))
-

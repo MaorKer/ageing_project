@@ -1,4 +1,4 @@
-# War & Hunger as Perturbations of Aging Curves (data + modeling)
+# War, Hunger, and Aging Curves — Data + Modeling Pipeline
 
 This repo implements a fully reproducible pipeline to test whether **war** and **hunger** act like:
 - added **extrinsic mortality** (`c`, Makeham term),
@@ -11,6 +11,7 @@ This repo implements a fully reproducible pipeline to test whether **war** and *
 - `reports/figures/`: event-study plots and hazard overlays
 - `reports/tables/`: event summaries and regression outputs
 - `reports/report.md`: a single markdown report that links everything
+- Optional (India SRS): `data/processed/srs_params.parquet`, `data/processed/srs_urban_rural_deltas.parquet`, `reports/figures/srs/`
 
 ## Data sources (exact)
 - Mortality: **UN WPP 2024** age-specific death rates (`mx`) exported via `scripts/30_export_wpp_from_r.R`
@@ -21,6 +22,15 @@ This repo implements a fully reproducible pipeline to test whether **war** and *
   - `SP.POP.TOTL` population
   - `SN.ITK.DEFC.ZS` prevalence of undernourishment (PoU)
   - `SN.ITK.MSFI.ZS` moderate or severe food insecurity (FIES)
+- Optional (national add-ons):
+  - **World Bank WDI API** (life expectancy + mortality): `scripts/11_fetch_wdi_extra.py`
+  - **WHO GHO API** (OData): `scripts/12_fetch_who_gho.py`
+
+## India (SRS) add-on (2018–22)
+This repo can also run the same “aging curve decomposition” idea on India’s SRS abridged life tables:
+- Extract the PDF into a tidy long-form table (with derived hazard proxy `mx` from `nqx`).
+- Fit GM/GMH per `area × residence × sex` and compute **Urban − Rural** deltas (e.g., `Δc`, `Δb`, `Δmrdt`).
+- Outputs land in `data/processed/` and `reports/figures/srs/`.
 
 ## Default study set (1990–2023)
 Configured in `config/project.yml`:
@@ -43,6 +53,9 @@ docker build -f docker/Dockerfile.py -t wha-py:0.1 .
 docker run --rm -v "$PWD":/work -w /work wha-r:0.1 Rscript scripts/30_export_wpp_from_r.R
 docker run --rm -v "$PWD":/work -w /work wha-py:0.1 bash -lc "python scripts/15_fetch_ucdp_brd.py && python scripts/20_prepare_ucdp.py && python scripts/10_fetch_wdi.py"
 docker run --rm -v "$PWD":/work -w /work wha-py:0.1 bash -lc "python scripts/40_build_panel.py && python scripts/50_fit_models.py && python scripts/60_make_figures.py && python scripts/70_run_regressions.py && python scripts/80_build_report.py"
+
+# Optional (India SRS):
+docker run --rm -v "$PWD":/work -w /work wha-py:0.1 bash -lc "python scripts/05_extract_srs_life_tables.py && python scripts/55_fit_srs_models.py"
 ```
 
 ### 1) Export WPP mortality (requires R)
@@ -105,7 +118,7 @@ python3 scripts/55_fit_srs_models.py
 ```bash
 bash scripts/90_make_pdf_report.sh
 ```
-This writes `reports/report_full.pdf`.
+This writes `reports/report_full.pdf` (and will include the India SRS add-on if the PDF is present).
 
 ## CLI (optional)
 After install, you can also use:
